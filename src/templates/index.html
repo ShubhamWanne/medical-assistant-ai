@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Assistant</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translateY(-100px);
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      perspective: 1000px;
+    }
+
+    .container {
+      text-align: center;
+      width: 90%;
+      max-width: 600px;
+      transition: transform 0.4s ease;
+      animation: fadeInUp 0.6s ease-out;
+      padding: 0 20px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title {
+      font-size: 64px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      min-height: 110px;
+      line-height: 1.2;
+      overflow: hidden;
+      position: relative;
+      padding: 30px 0 10px;
+    }
+
+    .languages span {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .languages span.visible {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 1;
+    }
+
+    .languages span:nth-child(2) {
+      font-size: 48px;
+    }
+
+    .languages span:nth-child(3) {
+      font-size: 48px;
+    }
+
+    .input-wrapper {
+      margin-top: 60px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 20px;
+      border: 1px solid #000;
+      border-radius: 25px;
+      font-size: 18px;
+      outline: none;
+      background-color: #fff;
+      color: #000;
+      margin-bottom: 20px;
+      transition: transform 0.4s ease;
+      z-index: 10;
+      position: relative;
+      autocomplete: off;
+    }
+
+    input[type="text"]:focus {
+      transform: scale(1.1);
+    }
+
+    .spinner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      display: none;
+    }
+
+    .spinner:after {
+      content: "";
+      display: block;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 4px solid #000;
+      border-color: #000 transparent #000 transparent;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      input[type="text"] {
+        font-size: 16px;
+        padding: 14px 14px;
+      }
+
+      .title {
+        font-size: 36px;
+        min-height: 90px;
+        line-height: 1.2;
+        padding: 20px 0 10px;
+        margin-bottom: 20px;
+      }
+
+      .languages span:nth-child(2) {
+        font-size: 32px;
+      }
+
+      .languages span:nth-child(3) {
+        font-size: 32px;
+      }
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .blinking-cursor::after {
+      content: '|';
+      animation: blink 1s infinite;
+      color: #000;
+      margin-left: 2px;
+    }
+  </style>
+  <script>
+    const titles = [
+      "Medical Assistant",
+      "వైద్య సహాయకుడు",
+      "மருத்துவ உதவியாளர்",
+      "ਮੈਡੀਕਲ ਮਦਦਗਾਰ",
+      "वैद्यकीय सहाय्यक",
+      "चिकित्सा सहायक",
+      "চিকিৎসা সহকারী",
+      "चिकिसा सहायक",
+      "તબીબી સહાયક"
+    ];
+    let index = 0;
+
+    function rotateTitles() {
+      const spans = document.querySelectorAll('.languages span');
+      spans.forEach((span, i) => {
+        span.classList.remove('visible');
+        if (i === index) {
+          setTimeout(() => {
+            span.classList.add('visible');
+          }, 50);
+        }
+      });
+      index = (index + 1) % spans.length;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      rotateTitles();
+      setInterval(rotateTitles, 3000);
+
+      const input = document.getElementById("query");
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          handleSearch();
+        }
+      });
+
+      // Typing animation for placeholder with blinking cursor and loop
+      const message = "how can I help you today ?";
+      let i = 0;
+
+      function typeEffect() {
+        if (i <= message.length) {
+          input.setAttribute("placeholder", message.substring(0, i));
+          i++;
+          setTimeout(typeEffect, 80);
+        } else {
+          setTimeout(() => {
+            i = 0;
+            input.setAttribute("placeholder", "");
+            typeEffect();
+          }, 30000);
+        }
+      }
+
+      typeEffect();
+      setInterval(() => {
+        i = 0;
+        input.setAttribute("placeholder", "");
+        typeEffect();
+      }, 30000);
+    });
+
+    function handleSearch() {
+      const input = document.getElementById("query");
+      const overlay = document.getElementById("spinnerOverlay");
+      if (input.value.trim() === "") return;
+      overlay.style.display = "flex";
+      setTimeout(() => {
+        overlay.style.display = "none";
+        alert("Search complete: " + input.value);
+      }, 2000);
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <div class="languages">
+        <span class="visible">Medical Assistant</span>
+        <span>వైద్య సహాయకుడు</span>
+        <span>மருத்துவ உதவியாளர்</span>
+        <span>ਮੈਡੀਕਲ ਮਦਦਗਾਰ</span>
+        <span>वैद्यकीय सहाय्यक</span>
+        <span>चिकित्सा सहायक</span>
+        <span>চিকিৎসা সহকারী</span>
+        <span>चिकिसा सहायक</span>
+        <span>તબીબી સહાયક</span>
+      </div>
+    </div>
+    <div class="input-wrapper">
+      <input type="text" id="query" placeholder="" class="blinking-cursor" autocomplete="off">
+    </div>
+  </div>
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner"></div>
+  </div>
+  <footer style="position: absolute; bottom: 10px; width: 100%; text-align: center; font-size: 14px; color: #888;">
+    © All rights reserved - Shubham Wanne
+  </footer>
+</body>
+</html>

@@ -1,0 +1,6 @@
+camel-ai
+google-generativeai 
+googlemaps
+pyyaml
+gps3
+python-dotenv
